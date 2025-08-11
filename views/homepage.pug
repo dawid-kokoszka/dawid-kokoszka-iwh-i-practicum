@@ -1,0 +1,22 @@
+doctype html
+html
+  head
+    title= title
+    link(rel="stylesheet", href="/css/style.css")
+  body
+    h1 Players
+    div.button-wrapper 
+      a(href="#") Add Player
+      a(href="#") Update Player
+    table
+      thead
+        tr
+          th Name
+          th Strength 
+          th Intelligence
+      tbody
+        each record in records
+          tr
+            td= record.properties.name
+            td= record.properties.strength
+            td= record.properties.intelligence

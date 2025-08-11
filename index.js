@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const axios = require('axios');
 const app = express();
@@ -7,12 +8,28 @@ app.use(express.static(__dirname + '/public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// * Please DO NOT INCLUDE the private app access token in your repo. Don't do this practicum in your normal account.
-const PRIVATE_APP_ACCESS = '';
 
-// TODO: ROUTE 1 - Create a new app.get route for the homepage to call your custom object data. Pass this data along to the front-end and create a new pug template in the views folder.
+const PRIVATE_APP_ACCESS = process.env.HUBSPOT_TOKEN;
+const CUSTOM_OBJECT_WITH_PROPERTIES = '2-145881838?properties=name&properties=strength&properties=intelligence';
+const CUSTOM_OBJECT_API = `https://api.hubapi.com/crm/v3/objects/${CUSTOM_OBJECT_WITH_PROPERTIES}`;
 
-// * Code for Route 1 goes here
+
+
+app.get('/', async (req, res) => {
+    try {
+        const response = await axios.get(CUSTOM_OBJECT_API, {
+            headers: { Authorization: `Bearer ${PRIVATE_APP_ACCESS}` }
+        });
+        console.log(response.data.results);
+        res.render('homepage', {
+            title: 'Homepage | Integrating With HubSpot I Practicum',
+            records: response.data.results
+        });
+    } catch (error) {
+        res.status(500).send('Error fetching custom objects');
+    }
+});
+
 
 // TODO: ROUTE 2 - Create a new app.get route for the form to create or update new custom object data. Send this data along in the next route.
 
@@ -68,4 +85,6 @@ app.post('/update', async (req, res) => {
 
 
 // * Localhost
-app.listen(3000, () => console.log('Listening on http://localhost:3000'));
+app.listen(3000, () => {
+    console.log('Listening on http://localhost:3000')
+});
